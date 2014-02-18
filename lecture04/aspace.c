@@ -19,6 +19,14 @@ int main ()
     printf ("Address of global is %p\n", &global);
     printf ("Address of local is %p\n", &local);
     printf ("Address of p is %p\n", p);
+
+    int new_local = 6;
+    printf ("Address of new_local is %p\n", &new_local);
+
+    void *q = malloc(5);
+    printf ("Address of q is %p\n", q);
+    void *r = malloc(5);
+    printf ("Address of r is %p\n", r);
     
     return 0;
 }

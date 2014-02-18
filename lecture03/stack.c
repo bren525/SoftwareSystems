@@ -10,10 +10,11 @@ License: GNU GPLv3
 
 #define SIZE 5
 
-int *foo() {
+int *foo() { //returns an array of size SIZE entirely filled with 17s
     int i;
-    int array[SIZE];
-
+    //int array[SIZE];
+    int *array = malloc(SIZE*size(int));
+    
     printf("%p\n", array);
 
     for (i=0; i<SIZE; i++) {
@@ -22,7 +23,7 @@ int *foo() {
     return array;
 }
 
-void bar() {
+void bar() { //replaces foo array because the same memory is used
     int i;
     int array[SIZE];
 
@@ -40,7 +41,7 @@ int main()
     bar();
 
     for (i=0; i<SIZE; i++) {
-	printf("%d\n", array[i]);
+	printf("%d\n", array[i]); //prints out whatever is at the address maybe neither foo nor bar
     }
 
     return 0;
