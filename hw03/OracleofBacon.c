@@ -71,7 +71,7 @@ void initMySQLdb(){
 
 }
 
-void getMovies(strlist **movielist, char* actor){
+strlist * getMovies(char* actor){
 
 	char * query = malloc(sizeof(char)*128);
 	memset(query, 0, sizeof(char) * 128);
@@ -119,45 +119,10 @@ void getMovies(strlist **movielist, char* actor){
 	}
 	printf("Done with Movies\n");
 	movies->len = i;
-	printf("Len %i\n",movies->len);
-	mysql_free_result(result);
-	printf("Freed result\n");
 
-	if(*movielist){
-		printf("Freeing movielist\n");
-		free(*movielist);
-		printf("Freed movielist\n");
-	}
-
-	*movielist = movies;
-	printf("reassigned movielist\n");
-
-
-	/*strlist movies;
-	if(!strcmp(actor,"A")){
-		movies.items[0] = "1";
-		movies.items[1] = "3";
-		movies.len = 2;
-	}else if(!strcmp(actor,"B")){
-		movies.items[0] = "1";
-		movies.items[1] = "2";
-		movies.len = 2;
-	}else if(!strcmp(actor,"C")){
-		movies.items[0] = "3";
-		movies.items[1] = "4";
-		movies.len = 2;
-	}else if(!strcmp(actor,"D")){
-		movies.items[0] = "2";
-		movies.items[1] = "5";
-		movies.len = 2;
-	}else if(!strcmp(actor,"E")){
-		movies.items[0] = "3";
-		movies.items[1] = "4";
-		movies.len = 2;
-	}
-	return movies;*/
+	return movies;
 }
-void getActors(strlist **actorlist,char* movie){
+strlist * getActors(char* movie){
 	char * query = malloc(sizeof(char)*128);
 	memset(query, 0, sizeof(char) * 128);
 
@@ -208,36 +173,7 @@ void getActors(strlist **actorlist,char* movie){
 
 	actors->len = i;
 
-	mysql_free_result(result);
-	if(*actorlist){
-		free(*actorlist);
-	}
-
-	*actorlist = actors;
-
-	/*strlist actors;
-	if(!strcmp(movie,"1")){
-		actors.items[0]="A";
-		actors.items[1]="B";
-		actors.len = 2;
-	}else if(!strcmp(movie,"2")){
-		actors.items[0]="B";
-		actors.items[1]="D";
-		actors.len = 2;
-	}else if(!strcmp(movie,"3")){
-		actors.items[0]="A";
-		actors.items[1]="C";
-		actors.items[2]="E";
-		actors.len = 3;
-	}else if(!strcmp(movie,"4")){
-		actors.items[0]="C";
-		actors.items[1]="E";
-		actors.len = 2;
-	}else if(!strcmp(movie,"5")){
-		actors.items[0]="D";
-		actors.len = 1;
-	}
-	return actors;*/
+	return actors;
 }
 
 Node* dequeue(Node **head, Node **tail){
@@ -260,32 +196,28 @@ PathNode* BFS(char * start,char * target){
 	Node* head = NULL;
 	Node* tail = NULL;
 
-	strlist *allMovies = NULL;
-	getMovies(&allMovies,start);
+	strlist * allMovies = getMovies(start);
 
 	printf("Got Movies\n");
 
 	int i;
 	int j;
-	char * movie;
-	char * actor;
-	strlist *allActors = NULL;
 
 	for(i = 0; i< allMovies->len; i++){
-		movie = allMovies->items[i];
+		char * movie = allMovies->items[i];
 
-		printf("Checking movie: %s\n", movie);
+		printf("Checking movie: #%i %s\n",i, movie);
 
-		getActors(&allActors,movie);
+		strlist* allActors = getActors(movie);
 
 		printf("Got Actors\n");
 
-		for(j = 0; j< allActors->len; j++){
+		for(j = 0; j< allActors->len ; j++){
 
-			actor = allActors->items[j];
+			char * actor = allActors->items[j];
 
 			if(strcmp(start,actor)){
-				printf("Checking actor: %s\n", actor);
+				printf("Checking actor: #%i %s\n",j, actor);
 				PathNode *toAdd = malloc(sizeof(PathNode));
 				memset(toAdd, 0, sizeof(PathNode));
 
@@ -316,21 +248,22 @@ PathNode* BFS(char * start,char * target){
 		PathNode *path = toCheck->value;
 		char * prevActor = path->actor;
 
-		getMovies(&allMovies,prevActor);
+		strlist *allMovies = getMovies(prevActor);
 
 		for(i = 0; i< allMovies->len; i++){
-			movie = allMovies->items[i];
+			char * movie = allMovies->items[i];
 
-			printf("Checking movie: %s\n", movie);
-			getActors(&allActors, movie);
+			printf("Checking movie: #%i %s\n",i, movie);
+
+			strlist * allActors = getActors(movie);
+			printf("Actors Len: %i\n",allActors->len);
 
 			for(j = 0; j< allActors->len; j++){
-				actor = allActors->items[i];
 
-				if(strcmp(prevActor,actor)){
+				char * actor = allActors->items[j];
+				printf("Checking actor: #%i %s\n",j, actor);
 
-					printf("Checking actor: %s\n", actor);
-
+				if(actor){
 					PathNode *toAdd = malloc(sizeof(PathNode));
 					memset(toAdd, 0, sizeof(PathNode));
 
