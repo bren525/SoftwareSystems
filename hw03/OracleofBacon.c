@@ -1,16 +1,3 @@
-/*BFS Oracle of Bacon
-Make queue of movies to search
-	implement linked list
-For each movie look through each cast member
-	if found
-		print all previous movie/actor connections 
-
-	if cast member not what we're looking for
-		add movie struct with previous movie and connecting actor
-			
-
-*/
-//
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,14 +97,15 @@ strlist * getMovies(char* actor){
 		movies->items[i]=malloc(sizeof(char)*65);
 		memset(movies->items[i],0,sizeof(char)*65);
 		strcpy(movies->items[i],row[0] ? row[0] : "NULL");
-		printf("Movie Res:%i ,%s\n", i,movies->items[i]);
+		//printf("Movie Res:%i ,%s\n", i,movies->items[i]);
 
 		i++;
 		if(i>=MAX){
 			break;
 		}
 	}
-	printf("Done with Movies\n");
+	mysql_free_result(result);
+
 	movies->len = i;
 
 	return movies;
@@ -163,13 +151,14 @@ strlist * getActors(char* movie){
 		actors->items[i]=malloc(sizeof(char)*65);
 		memset(actors->items[i],0,sizeof(char)*65);
 		strcpy(actors->items[i],row[0] ? row[0] : "NULL");
-		printf("Actor Res:%i ,%s\n", i,actors->items[i]);
+		//printf("Actor Res:%i ,%s\n", i,actors->items[i]);
 
 		i++;
 		if(i>=MAX){
 			break;
 		}
 	}
+	mysql_free_result(result);
 
 	actors->len = i;
 
@@ -179,6 +168,9 @@ strlist * getActors(char* movie){
 Node* dequeue(Node **head, Node **tail){
 	Node *toReturn = *head;
 	*head = (*head)->nextNode;
+	if(!*head){
+		*tail = NULL;
+	}
 	return toReturn;
 }
 void enqueue(Node **head, Node **tail, Node **node){
@@ -196,52 +188,29 @@ PathNode* BFS(char * start,char * target){
 	Node* head = NULL;
 	Node* tail = NULL;
 
-	strlist * allMovies = getMovies(start);
-
-	printf("Got Movies\n");
-
 	int i;
 	int j;
 
-	for(i = 0; i< allMovies->len; i++){
-		char * movie = allMovies->items[i];
 
-		printf("Checking movie: #%i %s\n",i, movie);
+	PathNode *toAdd = malloc(sizeof(PathNode));
+	memset(toAdd, 0, sizeof(PathNode));
 
-		strlist* allActors = getActors(movie);
+	toAdd->movie = malloc(sizeof(char)*65);
+	memset(toAdd->movie, 0, sizeof(char)*65);
+	strcpy(toAdd->movie,"START");
 
-		printf("Got Actors\n");
+	toAdd->actor = malloc(sizeof(char)*65);
+	memset(toAdd->actor, 0, sizeof(char)*65);
+	strcpy(toAdd->actor,start);
+	toAdd->nextPath = NULL;
 
-		for(j = 0; j< allActors->len ; j++){
+	Node *newNode = malloc(sizeof(Node));
+	newNode->value = toAdd;
+	newNode->nextNode = NULL;
+	enqueue(&head,&tail,&newNode);
 
-			char * actor = allActors->items[j];
-
-			if(strcmp(start,actor)){
-				printf("Checking actor: #%i %s\n",j, actor);
-				PathNode *toAdd = malloc(sizeof(PathNode));
-				memset(toAdd, 0, sizeof(PathNode));
-
-				toAdd->movie = malloc(sizeof(char)*65);
-				memset(toAdd->movie, 0, sizeof(char)*65);
-				strcpy(toAdd->movie,movie);
-
-				toAdd->actor = malloc(sizeof(char)*65);
-				memset(toAdd->actor, 0, sizeof(char)*65);
-				strcpy(toAdd->actor,actor);
-				toAdd->nextPath = NULL;
-
-				if (!strcmp(target,actor)){
-					return toAdd; 
-				}else{
-					Node *newNode = malloc(sizeof(Node));
-					newNode->value = toAdd;
-					newNode->nextNode = NULL;
-					enqueue(&head,&tail,&newNode);
-					//printQueue(head);
-				}
-			}
-		}
-	}
+	printQueue(head);
+		
 	puts("Using queue");
 	while(1){
 		Node *toCheck = dequeue(&head,&tail);
@@ -251,6 +220,7 @@ PathNode* BFS(char * start,char * target){
 		strlist *allMovies = getMovies(prevActor);
 
 		for(i = 0; i< allMovies->len; i++){
+			printQueue(head);
 			char * movie = allMovies->items[i];
 
 			printf("Checking movie: #%i %s\n",i, movie);
@@ -263,7 +233,7 @@ PathNode* BFS(char * start,char * target){
 				char * actor = allActors->items[j];
 				printf("Checking actor: #%i %s\n",j, actor);
 
-				if(actor){
+				if(strcmp(actor,prevActor)){
 					PathNode *toAdd = malloc(sizeof(PathNode));
 					memset(toAdd, 0, sizeof(PathNode));
 
@@ -296,7 +266,7 @@ PathNode* BFS(char * start,char * target){
 void printPath(PathNode * path){
 	PathNode *curr = path;
 	while(curr != NULL){
-		printf("%s-%s ===> ",curr->movie,curr->actor);
+		printf("%s-%s ===> ",curr->actor,curr->movie);
 		curr = curr->nextPath;
 	}
 }

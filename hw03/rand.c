@@ -86,10 +86,41 @@ float my_random_float2()
   return b.f;
 }
 
-// compute a random double using my algorithm
+// compute a random double using my algorithm-
 double my_random_double()
 {
-  // TODO: fill this in
+  long x;
+  long mant;
+  long exp = 1022; //11 bits of exponent 2^10 -2 = 1022
+  long mask = 1;
+
+  union {
+    double d; //64 bits
+    long i; //64 bits
+  } b;
+
+  // generate random bits until we see the first set bit
+  while (1) {
+    x = random();
+    x = (x<<32)|random();
+    if (x == 0) {
+      exp -= 63; // 64 bits of random
+    } else {
+      break;
+    }
+  }
+
+  // find the location of the first set bit and compute the exponent
+  while (x & mask) {
+    mask <<= 1;
+    exp--;
+  }
+
+  // use the remaining bit as the mantissa
+  mant = x >> 11; //11 bit exponent
+  b.i = (exp << 52) | mant; //52 mantissa bits
+
+  return b.d;
 }
 
 // return a constant (this is a dummy function for time trials)
