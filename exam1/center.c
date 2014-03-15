@@ -18,8 +18,27 @@ License: Creative Commons Attribution-ShareAlike 3.0
 
 char *center(char *s, int n, char fillchar)
 {
-    // FILL THIS IN
-    //    return NULL;
+    char *ret = (char *) malloc (n*sizeof(char)+1);
+    
+    int len = strlen(s);
+    int pad = (n - len)/2;
+    
+    int i = 0;
+    while(i < pad){
+        ret[i] = fillchar;
+        i++;
+    }
+    char *dest = ret;
+    dest += pad;
+    strcpy(dest,s);
+    i=pad + len;
+    while(i < n){
+        ret[i] = fillchar;
+        i++;
+    }
+    ret[n]='\0';
+    return ret;
+
 }
 
 

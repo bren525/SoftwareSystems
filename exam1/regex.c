@@ -9,8 +9,9 @@ License: Creative Commons Attribution-ShareAlike 3.0
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
+#include <sys/types.h>
 
-#define NUM_TRACKS 5;
+#define NUM_TRACKS 5
 
 char tracks[][80] = {
     "So What",
@@ -28,9 +29,9 @@ void find_track(char *search_for)
 {
     int i;
     for (i=0; i<NUM_TRACKS; i++) {
-	if (strstr(tracks[i], search_for)) {
+	   if (strstr(tracks[i], search_for)) {
 	    printf("Track %i: '%s'\n", i, tracks[i]);
-	}
+	   }
     }
 }
 
@@ -52,27 +53,27 @@ void find_track_regex(char *pattern)
 
     for (i=0; i<NUM_TRACKS; i++) {
         ret = regexec(&regex, tracks[i], 0, NULL, 0);
-	if (!ret) {
-	    printf("Track %i: '%s'\n", i, tracks[i]);
-	} else if (ret == REG_NOMATCH) {
-	    continue;
-	} else {
-           regerror(ret, &regex, msgbuf, sizeof(msgbuf));
-           fprintf(stderr, "Regex match failed: %s\n", msgbuf);
-	   exit(1);
-	}
+    	if (!ret) {
+    	    printf("Track %i: '%s'\n", i, tracks[i]);
+    	} else if (ret == REG_NOMATCH) {
+    	    continue;
+    	} else {
+               regerror(ret, &regex, msgbuf, sizeof(msgbuf));
+               fprintf(stderr, "Regex match failed: %s\n", msgbuf);
+    	   exit(1);
+    	}
     }
 
     /* I'm not sure this is necessary, but it's possible that if you
        let regex go out of scope without running regfree, it leaks
        (that is, leaves some allocated memory unfreed). */
-    regfree(regex);
+    regfree(&regex);
 }
 
-
+//
 int main (int argc, char *argv[])
 {
-    char *target = 'F';
+    char *target = "F";
     char *pattern = "Fr.*Fr.*";
 
     find_track(target);
