@@ -30,28 +30,19 @@ int buttonPin2 = 3;
 void setup() {
   Serial.begin(9600);
   
+ 
+  DDRD = B11100000;
   pinMode(buttonPin1, INPUT_PULLUP);  
   pinMode(buttonPin2, INPUT_PULLUP);  
-
-  pinMode(ledPin, OUTPUT);
-  
-  pinMode(13, OUTPUT);  
-  pinMode(12, OUTPUT);  
-  pinMode(11, OUTPUT);  
-  pinMode(10, OUTPUT);  
-  pinMode(9, OUTPUT);  
-  pinMode(8, OUTPUT);  
-  pinMode(7, OUTPUT);  
-  pinMode(6, OUTPUT);  
+  DDRB = B00111111;
 }
 
 void writeByte(int x) {
-  int pin;
-  
-  for (pin=13; pin>=6; pin--) {
-    digitalWrite(pin, x&1);
-    x >>= 1;
-  }
+  PORTB |= x>>2;
+  PORTB &= (x>>2 | B11000000);
+  PORTD |= x<<6;
+  PORTB &= (x<<6 | B00111111);
+  //Bits flipped manually on board
 }
 
 int counter = 0;
