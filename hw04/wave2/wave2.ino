@@ -74,8 +74,8 @@ void writeByte(int x) {
 
 int low = 36;
 int high = 255;
-int stride1 = 10;
-int stride2 = 60;
+int stride1 = 5;
+int stride2 = 10;
 int counter = low;
 
 ISR(TIMER2_COMPA_vect){
@@ -108,11 +108,12 @@ ISR(TIMER0_COMPA_vect){
 }
 
 void togglePitch(){
-  stride1 += 10;
-  stride2 -= 10;
-  if(stride1 >=60){
-    stride1 = 10;
-    stride2 = 60;
+  stride1 *= 2;
+  stride2 *= 2;
+  if(stride1 >=50){
+    stride1 = 5;
+    stride2 = 10;
+    
   }
 }
 
