@@ -10,7 +10,7 @@ License: Creative Commons Attribution-ShareAlike 3.0
 #include <pthread.h>
 #include "mutex.h"
 
-#define SIZE 1000
+#define SIZE 100000
 
 typedef struct {
     int next_id;

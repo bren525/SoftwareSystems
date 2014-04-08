@@ -18,8 +18,19 @@ typedef struct {
 
 // Makes a new matrix and sets all elements to zero.
 Matrix *make_matrix(int rows, int cols) {
-    // Fill this in
-    return NULL;
+    int i;
+    Matrix *matrix = (Matrix *) malloc(sizeof(Matrix));
+    puts("Allocated matrix");
+    matrix->rows = rows;
+    matrix->cols = cols;
+
+    matrix->data = malloc(rows * sizeof(double *));
+
+    for (i=0; i<matrix->rows; i++) {
+        matrix->data[i] = calloc(matrix->cols,sizeof(double));
+    }
+    puts("Allocated 0");
+    return matrix;
 }
 
 // Prints the elements of a matrix.
@@ -84,12 +95,27 @@ void mult_matrix(Matrix *A, Matrix *B, Matrix *C) {
     // Fill this in
     // Note that it is asking for matrix multiplication, not
     // elementwise multiplication
+
+    int i, j, k;
+
+    for (i=0; i<C->rows; i++) {
+    for (j=0; j<C->cols; j++) {
+        double total = 0;
+        for(k=0; k<A->cols;k++){
+            total += A->data[i][k] * B->data[k][j];
+        }
+        C->data[i][j] =  total;
+    }
+    }
+    
 }
 
 // Performs matrix multiplication and returns a new matrix.
 Matrix *mult_matrix_func(Matrix *A, Matrix *B) {
-    // Fill this in
-    return NULL;
+    assert(A->cols == B->rows);
+    Matrix *C = make_matrix(A->rows,B->cols);
+    mult_matrix(A,B,C);
+    return C;
 }
 
 int main() {
