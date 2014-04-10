@@ -155,6 +155,22 @@ double *row_sum(Matrix *A) {
     return res;
 }
 
+// Adds up the columns of A and returns a heap-allocated array of doubles.
+double *col_sum(Matrix *A) {
+    double total;
+    int i, j;
+
+    double *res = malloc(A->cols * sizeof(double));
+
+    for (i=0; i<A->cols; i++) {
+    total = 0.0;
+    for (j=0; j<A->rows; j++) {
+        total += A->data[j][i];
+    }
+    res[i] = total;
+    }
+    return res;
+}
 /* 
    http://en.wikipedia.org/wiki/Magic_square
 
@@ -168,6 +184,40 @@ double *row_sum(Matrix *A) {
 
    Feel free to use row_sum().
 */
+
+int is_magic_square(Matrix *A){
+    if(!(A->rows == A->cols)){
+        return 0;
+    }
+    int i;
+    double target = 0.0;
+    double total = 0.0;
+    //First diagonal
+    for(i=0;i<A->rows;i++){
+        total +=A->data[i][i];
+    }
+    target = total;
+    //Check Second diagonal
+    total = 0.0;
+    for(i=0;i<A->rows;i++){
+        total +=A->data[i][A->rows - i -1];
+    }
+    if(!(total==target)){ return 0; }
+
+    //Check row sums
+    double *rowtotals = row_sum(A);
+    for(i=0; i < A->rows; i++){
+        if(!(rowtotals[i]==target)){ return 0; }
+    }
+
+    //Check col sums
+    double *coltotals = col_sum(A);
+    for(i=0; i < A->rows; i++){
+        if(!(coltotals[i]==target)){ return 0; }
+    }
+    return 1;
+
+}
 
 
 int main() {
@@ -202,6 +252,36 @@ int main() {
 	printf("row %d\t%lf\n", i, sums[i]);
     }
     // should print 6, 22, 38
+
+    sums = col_sum(A);
+    for (i=0; i<A->cols; i++) {
+    printf("col %d\t%lf\n", i, sums[i]);
+    }
+    // should print 12, 15, 18, 21
+
+    Matrix *E = make_matrix(3, 3);
+    consecutive_matrix(E);
+    printf("E\n");
+    print_matrix(E);
+    printf("Is Magic: %i\n",is_magic_square(E));
+
+    Matrix *F = make_matrix(3, 3);
+    F->data[0][0] = 4;
+    F->data[0][1] = 9;
+    F->data[0][2] = 2;
+    F->data[1][0] = 3;
+    F->data[1][1] = 5;
+    F->data[1][2] = 7;
+    F->data[2][0] = 8;
+    F->data[2][1] = 1;
+    F->data[2][2] = 6;
+
+    printf("F\n");
+    print_matrix(F);
+    printf("Is Magic: %i\n",is_magic_square(F));
+
+
+   
 
     return 0;
 }
