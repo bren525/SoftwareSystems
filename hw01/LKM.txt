@@ -1,0 +1,10 @@
+4) Turn off the integral term by setting ki to 0.  What is the qualitative effect on the behavior of the system?  What is the effect on RMS error?
+Visibly more difficient (doesn't quite reach quota)
+slightly more variant (random)
+
+5) Modify setpoint so that instead of jumping up and then down, it increases gradually over time.  How does the system perform with this kind of setpoint behavior?
+Follows the trend more closely, not thrown off by sudden changes
+
+6) Add a derivative term and adjust the gain to minimize RMS.  For the gradually increasing setpoint, is the best PID controller better than the best PI controller?
+initital tests shows my kd of .1 - .12 shows best RMS. ki of .01 (given) shows equal bests, but seems much more volatile in terms of RMS.
+Optimized values together show the best overall scores AND the most consistency.
