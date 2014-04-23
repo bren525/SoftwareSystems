@@ -11,6 +11,8 @@
 // error information
 extern int errno;
 
+int stack = 0;
+
 // get_seconds returns the number of seconds since the
 // beginning of the day, with microsecond precision
 double get_seconds () {
@@ -24,7 +26,9 @@ double get_seconds () {
 void child_code(int i) 
 {
   sleep (i);
+  stack = 1;
   printf ("Hello from child %d.\n", i);
+  printf("Child Stack Val %i\n", stack);
   exit (i);
 }
 
@@ -66,6 +70,8 @@ int main (int argc, char *argv[])
     if (pid == 0) {
       child_code(i);
     }
+    sleep(2);
+     printf("Parent Stack Val %i\n", stack);
   }
 
   /* parent continues */
