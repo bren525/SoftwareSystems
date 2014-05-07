@@ -112,11 +112,34 @@ int read_in(int socket, char *buf, int len)
 
     return strlen(buf);
 }
+void child_code(int connect_d){
+    char buf[255];
+    if (say(connect_d, "Internet Knock-Knock Protocol Server\nKnock, knock.\n") == -1) {
+        close(connect_d);
+    }
+
+    read_in(connect_d, buf, sizeof(buf));
+    // check to make sure they said "Who's there?"
+    
+    if (say(connect_d, "Surrealist giraffe.\n") == -1) {
+        close(connect_d);
+    }
+
+    read_in(connect_d, buf, sizeof(buf));
+    // check to make sure they said "Surrealist giraffe who?"
+
+ 
+    if (say(connect_d, "Bathtub full of brightly-colored machine tools.\n") == -1) {
+        close(connect_d);
+    }
+
+    close(connect_d);
+
+}
 
 int main(int argc, char *argv[])
 {
-    int connect_d = 0, rc = 0;
-    char intro_msg[] = "Internet Knock-Knock Protocol Server\nKnock, knock.\n";
+    
     
     if (catch_signal(SIGINT, handle_shutdown) == -1)
 	error("Setting interrupt handler");
@@ -130,34 +153,18 @@ int main(int argc, char *argv[])
 
     printf("Waiting for connection on port %d\n", port);
 
-    char buf[255];
+    
 
     while (1) {
+    int connect_d = 0;
 	connect_d = open_client_socket();
+    if(fork()){
+        child_code(connect_d);
+    }else{
+        close(connect_d);
+    }
 
-	if (say(connect_d, intro_msg) == -1) {
-	    close(connect_d);
-	    continue;
-	}
 
-	read_in(connect_d, buf, sizeof(buf));
-	// check to make sure they said "Who's there?"
-	
-	if (say(connect_d, "Surrealist giraffe.\n") == -1) {
-	    close(connect_d);
-	    continue;
-	}
-
-	read_in(connect_d, buf, sizeof(buf));
-	// check to make sure they said "Surrealist giraffe who?"
-
- 
-	if (say(connect_d, "Bathtub full of brightly-colored machine tools.\n") == -1) {
-	    close(connect_d);
-	    continue;
-	}
-
-	close(connect_d);
     }
     return 0;
 }
